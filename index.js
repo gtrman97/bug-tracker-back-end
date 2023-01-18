@@ -1,5 +1,5 @@
-const express = require('express');
-const Sequelize = require('sequelize');
+import express from 'express';
+import Sequelize, { STRING } from 'sequelize';
 const app = express();
 
 // Connect to the database
@@ -21,9 +21,9 @@ sequelize
 
 // Define the models
 const User = sequelize.define('user', {
-  name: Sequelize.STRING,
-  email: Sequelize.STRING,
-  password: Sequelize.STRING
+  name: STRING,
+  email: STRING,
+  password: STRING
 });
 
 // Sync the models with the database
