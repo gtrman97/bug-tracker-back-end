@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gtrman97/bug-tracker-back-end#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "sequelize": "^6.28.0"
   }
 }

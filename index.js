@@ -1,9 +1,10 @@
 import express from 'express';
 import Sequelize, { STRING } from 'sequelize';
 const app = express();
+require('dotenv').config();
 
 // Connect to the database
-const sequelize = new Sequelize('database_name', 'username', 'password', {
+const sequelize = new Sequelize('database_name', 'username', process.env.DATABASE_PASSWORD, {
   host: 'host_name',
   dialect: 'postgres',
   operatorsAliases: false
