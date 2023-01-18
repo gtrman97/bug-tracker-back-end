@@ -1,7 +1,9 @@
 import express from "express";
 import Sequelize, { STRING } from "sequelize";
+import dotenv from "dotenv";
+
 const app = express();
-require("dotenv").config();
+dotenv.config();
 
 // Connect to the database
 const sequelize = new Sequelize(
@@ -36,10 +38,14 @@ const User = sequelize.define("user", {
 sequelize.sync();
 
 // Define routes
+app.get('/', (req, res) => {
+    res.send('Hello from Express!')
+  })
+
 app.get("/users", (req, res) => {
-  User.findAll().then((users) => {
-    res.json(users);
-  });
+  User.findAll()
+    .then((users) => res.json(users))
+    .catch((err) => res.status(500).json({ error: err.message }));
 });
 
 // Start the server
