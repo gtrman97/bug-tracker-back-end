@@ -4,8 +4,8 @@ const app = express();
 require('dotenv').config();
 
 // Connect to the database
-const sequelize = new Sequelize('database_name', 'username', process.env.DATABASE_PASSWORD, {
-  host: 'host_name',
+const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USERNAME, process.env.DATABASE_PASSWORD, {
+  host: process.env.ENDPONT,
   dialect: 'postgres',
   operatorsAliases: false
 });
