@@ -1,46 +1,31 @@
 import express from "express";
-import Sequelize, { STRING } from "sequelize";
-import dotenv from "dotenv";
+import cors from "cors";
+import sequelize from "./models/index.js";
+import User from "./models/User.js";
+import Ticket from "./models/Ticket.js";
 
 const app = express();
-dotenv.config();
 
-// Connect to the database
-const sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USERNAME,
-  process.env.DATABASE_PASSWORD,
-  {
-    host: process.env.ENDPONT,
-    dialect: "postgres",
-    operatorsAliases: false,
-  }
-);
+app.use(cors());
+app.use(express.json());
 
-// Test the connection
+// Test the connection and sync models with the database
 sequelize
   .authenticate()
   .then(() => {
     console.log("Connection has been established successfully.");
+    return sequelize.sync();
+  })
+  .then(() => {
+    console.log("All models synced.");
   })
   .catch((err) => {
     console.error("Unable to connect to the database:", err);
   });
 
-// Define the models
-const User = sequelize.define("user", {
-  name: STRING,
-  email: STRING,
-  password: STRING,
+app.get("/", (req, res) => {
+  res.send("Bug Tracker API is running");
 });
-
-// Sync the models with the database
-sequelize.sync();
-
-// Define routes
-app.get('/', (req, res) => {
-    res.send('Hello from Express!')
-  })
 
 app.get("/users", (req, res) => {
   User.findAll()
@@ -48,7 +33,12 @@ app.get("/users", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-// Start the server
+app.get("/tickets", (req, res) => {
+  Ticket.findAll({ include: { model: User, as: "assignee" } })
+    .then((tickets) => res.json(tickets))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
