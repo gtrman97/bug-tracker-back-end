@@ -42,3 +42,28 @@ app.get("/tickets", (req, res) => {
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
+
+app.post("/users", (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "name, email, and password are required" });
+  }
+
+  User.create({ name, email, password })
+    .then((user) => res.status(201).json(user))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.post("/tickets", (req, res) => {
+  const { title, description, status, assigneeId } = req.body;
+
+  if (!title || !assigneeId) {
+    return res.status(400).json({ error: "title and assigneeId are required" });
+  }
+
+  Ticket.create({ title, description, status, assigneeId })
+    .then((ticket) => Ticket.findByPk(ticket.id, { include: { model: User, as: "assignee" } }))
+    .then((ticket) => res.status(201).json(ticket))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
