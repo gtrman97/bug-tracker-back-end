@@ -67,3 +67,37 @@ app.post("/tickets", (req, res) => {
     .then((ticket) => res.status(201).json(ticket))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
+
+app.patch("/tickets/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, description, status, assigneeId } = req.body;
+
+  Ticket.findByPk(id)
+    .then((ticket) => {
+      if (!ticket) {
+        return res.status(404).json({ error: "Ticket not found" });
+      }
+      return ticket.update({ title, description, status, assigneeId });
+    })
+    .then((updated) => {
+      if (!updated) return; // already responded with 404 above
+      return Ticket.findByPk(id, { include: { model: User, as: "assignee" } });
+    })
+    .then((ticket) => {
+      if (ticket) res.json(ticket);
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.delete("/tickets/:id", (req, res) => {
+  const { id } = req.params;
+
+  Ticket.findByPk(id)
+    .then((ticket) => {
+      if (!ticket) {
+        return res.status(404).json({ error: "Ticket not found" });
+      }
+      return ticket.destroy().then(() => res.status(204).send());
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
