@@ -51,6 +51,7 @@ app.post("/users", (req, res) => {
   }
 
   User.create({ name, email, password })
+    .then((user) => User.findByPk(user.id))
     .then((user) => res.status(201).json(user))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
