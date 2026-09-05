@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 import User from "../models/User.js";
 import { signToken } from "../utils/token.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = Router();
 
@@ -58,6 +59,17 @@ router.post("/login", async (req, res) => {
 
   const token = signToken(user.id);
   res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+});
+
+// Given a valid token, who is this? Lets the frontend restore "who's
+// logged in" after a page refresh, when it only has the token (not the
+// name/email) sitting in storage.
+router.get("/me", verifyToken, async (req, res) => {
+  const user = await User.findByPk(req.user.id); // password already excluded by defaultScope
+  if (!user) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+  res.json({ user: { id: user.id, name: user.name, email: user.email } });
 });
 
 export default router;
