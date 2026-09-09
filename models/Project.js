@@ -13,6 +13,14 @@ const Project = sequelize.define("project", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  // Project-level lifecycle state. Deliberately separate from Ticket.status
+  // (which tracks individual tickets) — a project can be "in_progress"
+  // while containing a mix of open and closed tickets.
+  status: {
+    type: DataTypes.ENUM("not_started", "in_progress", "completed"),
+    defaultValue: "not_started",
+    allowNull: false,
+  },
 });
 
 export default Project;
